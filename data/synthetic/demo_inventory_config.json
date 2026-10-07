@@ -1,0 +1,8 @@
+{
+  "data_note": "synthetic/demo inventory only — not a clinical system",
+  "as_of": "2024-12-04",
+  "low_stock_threshold": 10,
+  "near_expiry_days": 2,
+  "horizon_days": 7,
+  "inventory_csv": "demo_inventory.csv"
+}

@@ -8,6 +8,7 @@ matplotlib
 plotly
 fastapi
 uvicorn
+httpx
 pydantic
 python-dotenv
 pytest

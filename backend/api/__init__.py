@@ -1,2 +1,1 @@
-"""API router package (placeholder).
-"""
+"""API router package for the local research dashboard."""

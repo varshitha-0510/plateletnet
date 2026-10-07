@@ -1,2 +1,1 @@
-"""Backend services package (placeholder).
-"""
+"""Backend services for the local research dashboard."""

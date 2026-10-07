@@ -1,0 +1,16 @@
+batch_id,blood_group,collection_date,expiry_date,quantity,notes
+# SYNTHETIC / DEMO RESEARCH INVENTORY ONLY — not clinical data
+# Reference as_of date for the dashboard: 2024-12-04 (Phase 1 hold-out start)
+OPLUS-A,O+,2024-11-28,2024-12-10,90,usable FIFO older
+OPLUS-B,O+,2024-12-01,2024-12-08,90,usable FIFO newer
+OPLUS-EXP,O+,2024-11-20,2024-12-02,40,expired — must be excluded from available units
+OMINUS-A,O-,2024-12-02,2024-12-06,8,usable near-expiry low stock
+APLUS-A,A+,2024-11-29,2024-12-09,70,usable
+APLUS-NEAR,A+,2024-12-03,2024-12-05,12,usable near-expiry
+AMINUS-A,A-,2024-11-30,2024-12-12,45,usable
+AMINUS-EXP,A-,2024-11-18,2024-12-01,15,expired — must be excluded from available units
+BPLUS-A,B+,2024-12-01,2024-12-11,25,usable
+BMINUS-A,B-,2024-12-02,2024-12-06,4,usable near-expiry low stock
+ABPLUS-A,AB+,2024-11-29,2024-12-13,50,usable
+ABMINUS-A,AB-,2024-12-01,2024-12-08,2,usable low stock
+ABMINUS-EMPTY,AB-,2024-11-28,2024-12-10,0,depleted — must be excluded from available units

@@ -54,3 +54,5 @@ data/raw/*
 !data/raw/platelet_demand.csv
 data/synthetic/*
 !data/synthetic/.gitkeep
+!data/synthetic/demo_inventory.csv
+!data/synthetic/demo_inventory_config.json

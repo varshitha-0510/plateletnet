@@ -1,4 +1,1 @@
-"""Backend package (placeholder).
-
-FastAPI application wiring will be added in a later stage.
-"""
+"""Backend package for the local PlateletNet research dashboard."""

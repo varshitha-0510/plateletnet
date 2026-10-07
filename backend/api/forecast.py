@@ -1,4 +1,1 @@
-"""Forecast API routes.
-
-Placeholder module. Endpoints are not implemented yet.
-"""
+"""Forecast API routes — served via the dashboard router."""

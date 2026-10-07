@@ -1,4 +1,1 @@
-"""Inventory API routes.
-
-Placeholder module. Endpoints are not implemented yet.
-"""
+"""Inventory API routes — served via the dashboard router."""

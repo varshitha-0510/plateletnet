@@ -3,12 +3,901 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PlateletNet — Dashboard Placeholder</title>
+  <title>PlateletNet — Research Prototype Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    :root {
+      --sidebar: #07111f;
+      --sidebar-2: #0c1c31;
+      --nav-hover: rgba(78, 205, 196, 0.12);
+      --bg: #e8eef6;
+      --canvas: #dfe8f2;
+      --card: #ffffff;
+      --ink: #102033;
+      --muted: #5d6f86;
+      --line: #d4deea;
+      --accent: #167a8b;
+      --accent-2: #2a9d8f;
+      --ok: #157a42;
+      --ok-bg: #e6f6ec;
+      --warn: #b45309;
+      --warn-bg: #fff4e5;
+      --bad: #b42318;
+      --bad-bg: #fdecec;
+      --chip: #e7f4f6;
+      --topbar: rgba(255,255,255,0.92);
+      --shadow: 0 12px 28px rgba(16, 38, 61, 0.08);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: auto; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      min-height: 100vh;
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 268px 1fr;
+      min-height: 100vh;
+    }
+    .sidebar {
+      background: radial-gradient(circle at top, #12324a 0%, var(--sidebar) 42%);
+      color: #e8f0f6;
+      padding: 1.15rem 0.85rem 1.2rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 1.05rem;
+    }
+    .brand {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      padding: 0.35rem 0.55rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3ecfb8, #1f6f8b);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: #062018;
+      letter-spacing: -0.05em;
+      box-shadow: 0 8px 18px rgba(46, 196, 182, 0.28);
+    }
+    .brand h1 { margin: 0; font-size: 1.18rem; letter-spacing: -0.03em; }
+    .brand p { margin: 0.15rem 0 0; font-size: 0.74rem; color: #9bb3c7; }
+    .side-status {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin: 0 0.55rem;
+      padding: 0.48rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.12);
+      color: #86efac;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .side-status.offline { background: rgba(180, 35, 24, 0.18); color: #fca5a5; }
+    .nav { display: grid; gap: 0.22rem; }
+    .nav a {
+      color: #c9d9e8;
+      text-decoration: none;
+      padding: 0.68rem 0.78rem;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    .nav a svg { width: 16px; height: 16px; opacity: 0.85; flex: 0 0 auto; }
+    .nav a:hover { background: var(--nav-hover); color: #fff; }
+    .nav a.active {
+      background: linear-gradient(90deg, rgba(46,196,182,0.18), rgba(255,255,255,0.04));
+      color: #fff;
+      border-color: rgba(62, 207, 184, 0.22);
+    }
+    .sidebar .note {
+      margin-top: auto;
+      font-size: 0.74rem;
+      color: #9bb3c7;
+      line-height: 1.5;
+      padding: 0.85rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+    }
+    .shell {
+      min-width: 0;
+      background: linear-gradient(180deg, #edf3f9 0%, var(--bg) 180px);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .topbar {
+      background: var(--topbar);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+      padding: 1.05rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .topbar h2 { margin: 0; font-size: 1.28rem; letter-spacing: -0.03em; }
+    .topbar .sub { margin: 0.22rem 0 0; color: var(--muted); font-size: 0.9rem; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; justify-content: flex-end; flex-shrink: 0; }
+    .pill {
+      border-radius: 999px;
+      padding: 0.38rem 0.78rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: var(--chip);
+      color: var(--accent);
+      border: 1px solid #d3ebef;
+      white-space: nowrap;
+    }
+    .online {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.42rem;
+      background: var(--ok-bg);
+      color: var(--ok);
+      border-color: #c8ead4;
+    }
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: #22c55e;
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+      animation: pulse 1.8s infinite;
+      flex: 0 0 auto;
+    }
+    .online.offline { background: var(--bad-bg); color: var(--bad); border-color: #f3c7c4; }
+    .online.offline .pulse { background: var(--bad); animation: none; }
+    @keyframes pulse {
+      70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+    }
+    .content { padding: 1.2rem 1.5rem 2.4rem; display: grid; gap: 1.05rem; flex: 1; }
+    .view { display: none; gap: 1.05rem; }
+    .view.active { display: grid; }
+    .banner {
+      background: linear-gradient(90deg, #fff7ea, #fff);
+      border: 1px solid #f0d9a6;
+      color: #6b4a12;
+      padding: 0.78rem 1rem;
+      border-radius: 12px;
+      font-size: 0.88rem;
+    }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.8rem;
+      margin-bottom: 0.85rem;
+    }
+    .section-head h3 { margin: 0; font-size: 1.08rem; letter-spacing: -0.02em; }
+    .lede { margin: 0.28rem 0 0; color: var(--muted); font-size: 0.86rem; }
+    .phase {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--chip);
+      border-radius: 999px;
+      padding: 0.28rem 0.6rem;
+      white-space: nowrap;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+    .card, .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .card {
+      padding: 1rem 1.05rem 1.05rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: linear-gradient(180deg, var(--accent-2), var(--accent));
+    }
+    .card.tone-warn::before { background: linear-gradient(180deg, #f59e0b, #d97706); }
+    .card.tone-bad::before { background: linear-gradient(180deg, #f87171, #b42318); }
+    .card .label { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+    .card .value { font-size: 1.62rem; font-weight: 700; margin-top: 0.42rem; letter-spacing: -0.04em; }
+    .card .hint { margin-top: 0.32rem; color: var(--muted); font-size: 0.74rem; }
+    .panel { padding: 1.1rem 1.15rem 1.2rem; }
+    .split { display: grid; grid-template-columns: 1.02fr 1fr; gap: 1rem; }
+    .table-wrap { overflow: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { text-align: left; padding: 0.64rem 0.5rem; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); font-weight: 650; font-size: 0.71rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    tbody tr:hover { background: #f5f9fc; }
+    tbody tr.row-warn { background: #fffaf2; }
+    tbody tr.row-bad { background: #fff6f5; }
+    tbody tr.row-selected { background: #eef8f6; }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.82rem; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 0.2rem 0.62rem;
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+    .badge.ok { background: var(--ok-bg); color: var(--ok); }
+    .badge.warn { background: var(--warn-bg); color: var(--warn); }
+    .badge.bad { background: var(--bad-bg); color: var(--bad); }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.85rem; }
+    .chip {
+      background: #f4f8fb;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.38rem 0.7rem;
+      font-size: 0.8rem;
+    }
+    .chart-card {
+      background: linear-gradient(180deg, #f7fbfc 0%, #ffffff 55%);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.75rem 0.7rem 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+    .chart-wrap { height: 360px; position: relative; }
+    .muted { color: var(--muted); font-size: 0.88rem; }
+    .error { background: var(--bad-bg); color: #8a1f16; padding: 0.8rem 1rem; border-radius: 10px; }
+    footer.page { color: var(--muted); font-size: 0.82rem; padding-top: 0.3rem; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+    }
+    .tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tab {
+      border: 1px solid var(--line);
+      background: #f4f8fb;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 0.42rem 0.85rem;
+      font: inherit;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .tab.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .tab.best { box-shadow: 0 0 0 2px rgba(22, 122, 139, 0.18); }
+    select {
+      font: inherit;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.42rem 0.6rem;
+      background: #fff;
+    }
+    .jump {
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+    }
+    @media (max-width: 1280px) {
+      .split { grid-template-columns: 1fr; }
+      .topbar { flex-wrap: wrap; }
+    }
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { height: auto; position: relative; }
+      .nav { grid-template-columns: 1fr 1fr; }
+      .cards { grid-template-columns: 1fr 1fr; }
+      .topbar { flex-direction: column; align-items: flex-start; }
+      .meta-row { justify-content: flex-start; }
+    }
+  </style>
 </head>
 <body>
-  <h1>PlateletNet</h1>
-  <p>Interactive dashboard placeholder. Frontend functionality is not implemented in this scaffolding stage.</p>
-  <p><strong>This is not a clinical medical system.</strong> Synthetic/demo data only. Do not use real patient information.</p>
-  <p><strong>Simulated Micro-Expiry — Research/Demo Only.</strong> This application does not extend the medical expiry date of platelets.</p>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark">PN</div>
+        <div>
+          <h1>PlateletNet</h1>
+          <p>Admin console</p>
+        </div>
+      </div>
+      <div class="side-status" id="system-status-side"><span class="pulse"></span> Connecting</div>
+      <nav class="nav" id="app-nav">
+        <a href="#dashboard" data-view="dashboard" class="active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+          Dashboard
+        </a>
+        <a href="#inventory" data-view="inventory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/></svg>
+          Inventory
+        </a>
+        <a href="#forecast" data-view="forecast">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15l4-5 3 3 5-7"/></svg>
+          Demand Forecast
+        </a>
+        <a href="#jit" data-view="jit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>
+          JIT Recommendations
+        </a>
+        <a href="#alerts" data-view="alerts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v5"/><path d="M12 16h.01"/><path d="M10.3 4.3L3.6 16a2 2 0 001.7 3h13.4a2 2 0 001.7-3L13.7 4.3a2 2 0 00-3.4 0z"/></svg>
+          Alerts
+        </a>
+      </nav>
+      <div class="note">
+        <strong>Research Prototype — Synthetic/Demo Data</strong><br>
+        Not a clinical decision-support system.<br>
+        Simulated Micro-Expiry is not implemented.
+      </div>
+    </aside>
+    <div class="shell">
+      <header class="topbar">
+        <div>
+          <h2 id="page-title">Dashboard</h2>
+          <p class="sub" id="page-sub">Research Prototype — Synthetic/Demo Data</p>
+        </div>
+        <div class="meta-row">
+          <span class="pill" id="live-meta">Loading Python data…</span>
+          <span class="pill online" id="system-status"><span class="pulse"></span> Connecting</span>
+        </div>
+      </header>
+      <main class="content">
+        <div class="banner">
+          <strong>Research Prototype — Synthetic/Demo Data.</strong>
+          Not a clinical decision-support system.
+          Synthetic / Research Forecast and demo inventory only. Expiry dates are not extended.
+          Do not use real patient information.
+        </div>
+        <div id="status-line" class="muted">Loading live values from the Python implementation…</div>
+
+        <section class="view active" id="view-dashboard" data-view="dashboard">
+          <div class="cards" id="summary-cards"></div>
+          <div class="split">
+            <article class="panel">
+              <div class="section-head">
+                <div>
+                  <h3>Blood-group stock status</h3>
+                  <p class="lede">Compact Phase 2 overview. Open Inventory for batches and FIFO.</p>
+                </div>
+                <button class="jump" data-goto="inventory">Open Inventory</button>
+              </div>
+              <div class="chips" id="dash-stock-chips"></div>
+              <div class="table-wrap"><table id="dash-stock-table"></table></div>
+            </article>
+            <article class="panel">
+              <div class="section-head">
+                <div>
+                  <h3>Forecast summary</h3>
+                  <p class="lede" id="dash-forecast-meta">Synthetic / Research Forecast</p>
+                </div>
+                <button class="jump" data-goto="forecast">Open Demand Forecast</button>
+              </div>
+              <div class="table-wrap"><table id="dash-forecast-table"></table></div>
+            </article>
+          </div>
+          <div class="split">
+            <article class="panel">
+              <div class="section-head">
+                <div>
+                  <h3>JIT shortage summary</h3>
+                  <p class="lede">Phase 3 groups that need a recommended quantity.</p>
+                </div>
+                <button class="jump" data-goto="jit">Open JIT Recommendations</button>
+              </div>
+              <div class="table-wrap"><table id="dash-jit-table"></table></div>
+            </article>
+            <article class="panel">
+              <div class="section-head">
+                <div>
+                  <h3>Important alerts</h3>
+                  <p class="lede">Low stock, expiry, and projected shortage. Full list on Alerts.</p>
+                </div>
+                <button class="jump" data-goto="alerts">Open Alerts</button>
+              </div>
+              <div class="table-wrap"><table id="dash-alerts-table"></table></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-inventory" data-view="inventory">
+          <article class="panel">
+            <div class="section-head">
+              <div>
+                <h3>Inventory</h3>
+                <p class="lede">Available units from Phase 2 InventoryManager. Expired and depleted batches are excluded from totals.</p>
+              </div>
+              <span class="phase">Phase 2</span>
+            </div>
+            <div class="cards" id="inventory-cards"></div>
+          </article>
+          <article class="panel">
+            <div class="section-head">
+              <div>
+                <h3>Blood-group-wise inventory</h3>
+                <p class="lede">Low-stock status uses the Phase 2 threshold.</p>
+              </div>
+            </div>
+            <div class="chips" id="stock-chips"></div>
+            <div class="table-wrap"><table id="stock-table"></table></div>
+          </article>
+          <article class="panel">
+            <div class="section-head">
+              <div>
+                <h3>Batch information</h3>
+                <p class="lede">Collection date, expiry date, remaining quantity, and batch status. Dates are not modified.</p>
+              </div>
+            </div>
+            <div class="table-wrap"><table id="batch-table"></table></div>
+          </article>
+          <section class="split">
+            <article class="panel">
+              <div class="section-head">
+                <div>
+                  <h3>Expired batches</h3>
+                  <p class="lede">Phase 2 expiry tracking. Dates are not extended.</p>
+                </div>
+              </div>
+              <div class="table-wrap"><table id="expired-table"></table></div>
+            </article>
+            <article class="panel">
+              <div class="section-head">
+                <div>
+                  <h3>Near-expiry batches</h3>
+                  <p class="lede">Usable batches inside the near-expiry warning window.</p>
+                </div>
+              </div>
+              <div class="table-wrap"><table id="near-expiry-table"></table></div>
+            </article>
+          </section>
+          <article class="panel">
+            <div class="section-head">
+              <div>
+                <h3>FIFO / inventory status</h3>
+                <p class="lede">Usable batches in FIFO order (oldest collection date first). Depleted and expired batches are not issued.</p>
+              </div>
+              <span class="phase">Phase 2</span>
+            </div>
+            <div class="table-wrap"><table id="fifo-table"></table></div>
+          </article>
+        </section>
+
+        <section class="view" id="view-forecast" data-view="forecast">
+          <article class="panel">
+            <div class="section-head">
+              <div>
+                <h3>Demand Forecast</h3>
+                <p class="lede" id="forecast-meta">Synthetic / Research Forecast</p>
+              </div>
+              <span class="phase">Phase 1</span>
+            </div>
+            <p class="muted" id="forecast-reason"></p>
+            <div class="table-wrap"><table id="comparison-table"></table></div>
+          </article>
+          <article class="panel">
+            <div class="toolbar">
+              <div>
+                <h3 style="margin:0;">Model forecasts</h3>
+                <p class="lede">Separate visual sections for SMA Forecast, XGBoost Forecast, and SARIMA Forecast from results/forecasts/. Actual vs forecast on the Phase 1 hold-out set.</p>
+              </div>
+              <label class="muted">Blood group
+                <select id="forecast-group"></select>
+              </label>
+            </div>
+            <div class="tabs" id="model-tabs"></div>
+            <div id="model-panels"></div>
+          </article>
+        </section>
+
+        <section class="view" id="view-jit" data-view="jit">
+          <article class="panel">
+            <div class="section-head">
+              <div>
+                <h3>JIT Recommendations</h3>
+                <p class="lede">Phase 3 engine: recommended quantity = max(forecast demand − available inventory, 0). Not clinical advice.</p>
+              </div>
+              <span class="phase">Phase 3</span>
+            </div>
+            <div id="warning-body" class="chips"></div>
+            <div class="table-wrap"><table id="jit-table"></table></div>
+          </article>
+        </section>
+
+        <section class="view" id="view-alerts" data-view="alerts">
+          <article class="panel">
+            <div class="section-head">
+              <div>
+                <h3>Alerts</h3>
+                <p class="lede">Low-stock, near-expiry, expired, and forecast shortage groups from Phase 2 and Phase 3.</p>
+              </div>
+              <span class="phase">Alerts</span>
+            </div>
+            <div class="cards" id="alert-summary-cards"></div>
+          </article>
+          <article class="panel">
+            <div class="section-head"><div><h3>Low-stock blood groups</h3><p class="lede">Below the Phase 2 threshold.</p></div></div>
+            <div class="table-wrap"><table id="alert-low-table"></table></div>
+          </article>
+          <article class="panel">
+            <div class="section-head"><div><h3>Forecast shortage groups</h3><p class="lede">Phase 3 projected shortage over the forecast horizon.</p></div></div>
+            <div class="table-wrap"><table id="alert-shortage-table"></table></div>
+          </article>
+          <section class="split">
+            <article class="panel">
+              <div class="section-head"><div><h3>Near-expiry batches</h3></div></div>
+              <div class="table-wrap"><table id="alert-near-table"></table></div>
+            </article>
+            <article class="panel">
+              <div class="section-head"><div><h3>Expired batches</h3></div></div>
+              <div class="table-wrap"><table id="alert-expired-table"></table></div>
+            </article>
+          </section>
+        </section>
+
+        <footer class="page">
+          PlateletNet academic demonstration. Python is the source of truth; this page only displays API results.
+          Research Prototype — Synthetic/Demo Data. Not a clinical decision-support system.
+        </footer>
+      </main>
+    </div>
+  </div>
+  <script>
+    const PAGE_COPY = {
+      dashboard: ["Dashboard", "Application home · research prototype"],
+      inventory: ["Inventory", "Phase 2 InventoryManager · FIFO and expiry"],
+      forecast: ["Demand Forecast", "Phase 1 SMA, XGBoost, and SARIMA"],
+      jit: ["JIT Recommendations", "Phase 3 shortage and recommended quantity"],
+      alerts: ["Alerts", "Low stock, expiry, and forecast shortage"]
+    };
+    const fmt = (n, d = 2) => Number(n).toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: 0 });
+    const table = (el, headers, rows, emptyCols) => {
+      el.innerHTML = `<thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows || `<tr><td colspan="${emptyCols || headers.length}">None</td></tr>`}</tbody>`;
+    };
+    const badge = (kind, text) => `<span class="badge ${kind}">${text}</span>`;
+    const statusBadge = (status) => {
+      if (status === "expired") return badge("bad", "Expired");
+      if (status === "depleted") return badge("warn", "Depleted");
+      if (status === "available") return badge("ok", "Available");
+      return badge("ok", status);
+    };
+
+    function showView(name) {
+      const view = PAGE_COPY[name] ? name : "dashboard";
+      document.querySelectorAll(".view").forEach(el => {
+        el.classList.toggle("active", el.dataset.view === view);
+      });
+      document.querySelectorAll("#app-nav a").forEach(a => {
+        a.classList.toggle("active", a.dataset.view === view);
+      });
+      const [title, sub] = PAGE_COPY[view];
+      document.getElementById("page-title").textContent = title;
+      document.getElementById("page-sub").textContent = sub;
+      if (location.hash.replace("#", "") !== view) {
+        history.replaceState(null, "", "#" + view);
+      }
+      if (view === "forecast") {
+        requestAnimationFrame(() => {
+          document.querySelectorAll(".js-plotly-plot").forEach(el => {
+            if (window.Plotly) Plotly.Plots.resize(el);
+          });
+        });
+      }
+    }
+
+    function seriesForPlot(series, bloodGroup) {
+      const byDate = {};
+      series.forEach(row => {
+        if (bloodGroup !== "ALL" && row.blood_group !== bloodGroup) return;
+        if (!byDate[row.date]) byDate[row.date] = { date: row.date, prediction: 0, actual: 0, hasActual: false };
+        byDate[row.date].prediction += Number(row.prediction) || 0;
+        if (row.actual !== null && row.actual !== undefined) {
+          byDate[row.date].actual += Number(row.actual);
+          byDate[row.date].hasActual = true;
+        }
+      });
+      return Object.keys(byDate).sort().map(k => byDate[k]);
+    }
+
+    function drawModelChart(divId, model, bloodGroup) {
+      const host = document.getElementById(divId);
+      if (!host) return;
+      if (!window.Plotly) {
+        host.innerHTML = `<div class="error">Plotly did not load. SMA / XGBoost / SARIMA tables below still use Phase 1 files.</div>`;
+        return;
+      }
+      if (!model.series || !model.series.length) {
+        host.innerHTML = `<div class="error">No series found in ${model.file || "the Phase 1 forecast file"}.</div>`;
+        return;
+      }
+      const rows = seriesForPlot(model.series, bloodGroup);
+      const traces = [
+        {
+          x: rows.map(r => r.date),
+          y: rows.map(r => r.prediction),
+          name: model.name + " forecast",
+          mode: "lines+markers",
+          line: { color: "#167a8b", width: 3 },
+          marker: { size: 6 }
+        }
+      ];
+      if (rows.some(r => r.hasActual)) {
+        traces.unshift({
+          x: rows.map(r => r.date),
+          y: rows.map(r => r.actual),
+          name: "Actual demand",
+          mode: "lines+markers",
+          line: { color: "#102033", width: 2, dash: "dot" },
+          marker: { size: 6 }
+        });
+      }
+      const titleGroup = bloodGroup === "ALL" ? "all blood groups (sum)" : bloodGroup;
+      Plotly.react(host, traces, {
+        title: { text: model.name + " Forecast · " + titleGroup, font: { size: 15 } },
+        margin: { t: 48, r: 18, b: 48, l: 48 },
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "#fbfefe",
+        legend: { orientation: "h", y: 1.12 },
+        xaxis: { title: "Date (hold-out horizon)" },
+        yaxis: { title: "Units", zeroline: false },
+        hovermode: "x unified"
+      }, { displayModeBar: false, responsive: true });
+    }
+
+    document.getElementById("app-nav").addEventListener("click", (event) => {
+      const link = event.target.closest("a[data-view]");
+      if (!link) return;
+      event.preventDefault();
+      showView(link.dataset.view);
+    });
+    document.querySelector(".content").addEventListener("click", (event) => {
+      const jump = event.target.closest("[data-goto]");
+      if (!jump) return;
+      showView(jump.dataset.goto);
+    });
+    window.addEventListener("hashchange", () => showView(location.hash.replace("#", "") || "dashboard"));
+
+    fetch("/api/dashboard")
+      .then(r => { if (!r.ok) throw new Error("Dashboard API returned " + r.status); return r.json(); })
+      .then(data => {
+        const inv = data.inventory;
+        const fc = data.forecast;
+        const jit = data.jit;
+        const expired = (inv.expiry_alerts || []).filter(a => a.alert_type === "expired");
+        const near = (inv.expiry_alerts || []).filter(a => a.alert_type === "near_expiry");
+        const shortageCount = (jit.shortage_groups || []).length;
+        const lowStockCount = (inv.low_stock_groups || []).length;
+        const expiryCount = (inv.expiry_alerts || []).length;
+
+        document.getElementById("status-line").textContent =
+          `Live data loaded from Python · model ${fc.selected_model} · as of ${inv.as_of} · horizon ${fc.horizon_days} days`;
+        document.getElementById("live-meta").textContent = `As of ${inv.as_of}`;
+        document.getElementById("system-status").innerHTML = `<span class="pulse"></span> System Online`;
+        document.getElementById("system-status-side").innerHTML = `<span class="pulse"></span> System Online`;
+
+        document.getElementById("summary-cards").innerHTML = [
+          ["Total Available Units", fmt(inv.total_available, 0), "Phase 2 inventory", ""],
+          ["Selected Forecast Model", fc.selected_model, "Phase 1 registry", ""],
+          ["Forecast Horizon", fc.horizon_days + " Days", "Synthetic / Research Forecast", ""],
+          ["Shortage Groups", shortageCount, "Phase 3 JIT", shortageCount ? "tone-bad" : ""],
+          ["Low-Stock Groups", lowStockCount, "Below threshold", lowStockCount ? "tone-warn" : ""],
+          ["Expiry Alerts", expiryCount, "Expired + near-expiry", expiryCount ? "tone-warn" : ""]
+        ].map(([label, value, hint, tone]) =>
+          `<article class="card ${tone}"><div class="label">${label}</div><div class="value">${value}</div><div class="hint">${hint}</div></article>`
+        ).join("");
+
+        const stockChips = inv.by_blood_group.map(g =>
+          `<span class="chip"><strong>${g.blood_group}</strong> · ${g.available_units} units</span>`
+        ).join("");
+        document.getElementById("dash-stock-chips").innerHTML = stockChips;
+        document.getElementById("stock-chips").innerHTML = stockChips;
+        const stockRows = inv.by_blood_group.map(g =>
+          `<tr class="${g.low_stock ? "row-warn" : ""}"><td>${g.blood_group}</td><td>${g.available_units}</td><td>${g.threshold}</td><td>${g.low_stock ? badge("warn", "Low Stock") : badge("ok", "Healthy")}</td></tr>`
+        ).join("");
+        const stockHeads = ["Blood Group", "Available Units", "Low Stock Threshold", "Status"];
+        table(document.getElementById("dash-stock-table"), stockHeads, stockRows);
+        table(document.getElementById("stock-table"), stockHeads, stockRows);
+
+        document.getElementById("dash-forecast-meta").textContent =
+          `Synthetic / Research Forecast · selected ${fc.selected_model} · ${fc.horizon_days}-day JIT horizon`;
+        table(document.getElementById("dash-forecast-table"),
+          ["Blood Group", "Forecast Demand"],
+          fc.by_blood_group.map(g => `<tr><td>${g.blood_group}</td><td>${fmt(g.expected_demand)}</td></tr>`).join("")
+        );
+
+        const shortages = jit.recommendations.filter(r => r.status === "shortage");
+        table(document.getElementById("dash-jit-table"),
+          ["Blood Group", "Shortage", "Recommended Qty"],
+          shortages.length
+            ? shortages.map(r => `<tr class="row-bad"><td>${r.blood_group}</td><td>${fmt(r.projected_shortage)}</td><td>${fmt(r.recommended_quantity)}</td></tr>`).join("")
+            : ""
+        );
+
+        const dashAlerts = [
+          ...inv.low_stock_groups.map(g => ["Low stock", g, "Phase 2", "warn"]),
+          ...expired.map(a => ["Expired", a.batch_id + " · " + a.blood_group, a.expiry_date, "bad"]),
+          ...near.map(a => ["Near-expiry", a.batch_id + " · " + a.blood_group, a.expiry_date, "warn"]),
+          ...(jit.shortage_groups || []).map(g => ["Forecast shortage", g, "Phase 3", "bad"])
+        ].slice(0, 8);
+        table(document.getElementById("dash-alerts-table"),
+          ["Type", "Item", "Detail"],
+          dashAlerts.map(([type, item, detail, kind]) =>
+            `<tr class="${kind === "bad" ? "row-bad" : "row-warn"}"><td>${badge(kind, type)}</td><td>${item}</td><td>${detail}</td></tr>`
+          ).join("")
+        );
+
+        document.getElementById("inventory-cards").innerHTML = [
+          ["Total available", fmt(inv.total_available, 0), "Usable units as of " + inv.as_of],
+          ["Low-stock groups", String(lowStockCount), "Threshold " + inv.low_stock_threshold],
+          ["Expiry alerts", String(expiryCount), "Near-expiry window " + inv.near_expiry_days + " days"]
+        ].map(([label, value, hint]) =>
+          `<article class="card"><div class="label">${label}</div><div class="value">${value}</div><div class="hint">${hint}</div></article>`
+        ).join("");
+
+        table(document.getElementById("batch-table"),
+          ["Batch ID", "Blood Group", "Collection Date", "Expiry Date", "Available Quantity", "Batch Status"],
+          (inv.batches || []).map(b =>
+            `<tr class="${b.status === "expired" ? "row-bad" : (b.status === "depleted" ? "row-warn" : "")}"><td class="mono">${b.batch_id}</td><td>${b.blood_group}</td><td>${b.collection_date}</td><td>${b.expiry_date}</td><td>${b.quantity}</td><td>${statusBadge(b.status)}</td></tr>`
+          ).join("")
+        );
+
+        const alertLabel = (type) => type === "near_expiry" ? "Near-Expiry" : "Expired";
+        const alertRows = (rows, kind) => rows.map(a =>
+          `<tr class="${kind === "bad" ? "row-bad" : "row-warn"}"><td class="mono">${a.batch_id}</td><td>${a.blood_group}</td><td>${a.quantity}</td><td>${a.expiry_date}</td><td>${badge(kind, alertLabel(a.alert_type))}</td></tr>`
+        ).join("");
+        const alertHeads = ["Batch ID", "Blood Group", "Quantity", "Expiry Date", "Alert Type"];
+        table(document.getElementById("expired-table"), alertHeads, alertRows(expired, "bad"));
+        table(document.getElementById("near-expiry-table"), alertHeads, alertRows(near, "warn"));
+        table(document.getElementById("alert-expired-table"), alertHeads, alertRows(expired, "bad"));
+        table(document.getElementById("alert-near-table"), alertHeads, alertRows(near, "warn"));
+
+        table(document.getElementById("fifo-table"),
+          ["Batch ID", "Blood Group", "Collection Date", "Expiry Date", "Quantity", "Status"],
+          inv.fifo_order.map(b =>
+            `<tr><td class="mono">${b.batch_id}</td><td>${b.blood_group}</td><td>${b.collection_date}</td><td>${b.expiry_date}</td><td>${b.quantity}</td><td>${badge("ok", b.status === "available" ? "Available" : b.status)}</td></tr>`
+          ).join("")
+        );
+
+        document.getElementById("forecast-meta").textContent =
+          `Synthetic / Research Forecast · selected ${fc.selected_model} · hold-out ${fc.test_start || ""} to ${fc.test_end || ""} · JIT horizon ${fc.horizon_days} days`;
+        document.getElementById("forecast-reason").textContent = fc.selection_reason || "";
+        const comparison = fc.comparison || (fc.metrics || []).map(m => ({ ...m, selected: m.model === fc.selected_model }));
+        table(document.getElementById("comparison-table"),
+          ["Model", "MAE", "RMSE", "MAPE", "Selected"],
+          comparison.map(m =>
+            `<tr class="${m.selected ? "row-selected" : ""}"><td>${m.model}</td><td>${fmt(m.MAE, 4)}</td><td>${fmt(m.RMSE, 4)}</td><td>${fmt(m.MAPE, 4)}</td><td>${m.selected ? badge("ok", "Best / selected") : ""}</td></tr>`
+          ).join("")
+        );
+
+        const models = fc.models || [];
+        const groupSelect = document.getElementById("forecast-group");
+        const groups = ["ALL", ...((models[0] && models[0].blood_groups) || [])];
+        groupSelect.innerHTML = groups.map(g => `<option value="${g}">${g === "ALL" ? "All groups (sum)" : g}</option>`).join("");
+        const tabs = document.getElementById("model-tabs");
+        const panels = document.getElementById("model-panels");
+        tabs.innerHTML = models.map((m, i) =>
+          `<button type="button" class="tab ${i === 0 ? "active" : ""} ${m.selected ? "best" : ""}" data-model="${m.name}">${m.name} Forecast${m.selected ? " · selected" : ""}</button>`
+        ).join("");
+        panels.innerHTML = models.map((m, i) => `
+          <div class="model-panel" data-model-panel="${m.name}" style="${i === 0 ? "" : "display:none"}">
+            <p class="muted">${m.name} · ${m.horizon_days || 0}-day hold-out (${m.horizon_start || "n/a"} to ${m.horizon_end || "n/a"}) · file ${m.file}</p>
+            <div class="chart-card"><div class="chart-wrap" id="chart-${m.name}"></div></div>
+            <div class="table-wrap"><table id="table-${m.name}"></table></div>
+          </div>
+        `).join("");
+
+        const renderCharts = () => {
+          const group = groupSelect.value || "ALL";
+          models.forEach(m => {
+            drawModelChart("chart-" + m.name, m, group);
+            const preview = seriesForPlot(m.series, group).slice(-8);
+            table(document.getElementById("table-" + m.name),
+              ["Date", "Scope", "Actual", m.name + " forecast"],
+              preview.map(r => `<tr><td>${r.date}</td><td>${group === "ALL" ? "All groups" : group}</td><td>${r.hasActual ? fmt(r.actual) : "—"}</td><td>${fmt(r.prediction)}</td></tr>`).join("")
+            );
+          });
+        };
+        tabs.addEventListener("click", (event) => {
+          const btn = event.target.closest("[data-model]");
+          if (!btn) return;
+          tabs.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t === btn));
+          panels.querySelectorAll(".model-panel").forEach(p => {
+            p.style.display = p.dataset.modelPanel === btn.dataset.model ? "" : "none";
+          });
+          if (window.Plotly) {
+            const chart = document.getElementById("chart-" + btn.dataset.model);
+            if (chart) Plotly.Plots.resize(chart);
+          }
+        });
+        groupSelect.addEventListener("change", renderCharts);
+        renderCharts();
+
+        const chip = (label, items) =>
+          `<span class="chip">${label}: ${items.length ? items.map(x => `<strong>${x}</strong>`).join(", ") : "None"}</span>`;
+        document.getElementById("warning-body").innerHTML =
+          chip("Low stock (Phase 2)", inv.low_stock_groups) +
+          chip("Projected shortage (Phase 3)", jit.shortage_groups) +
+          chip("Sufficient (Phase 3)", jit.sufficient_groups);
+
+        table(document.getElementById("jit-table"),
+          ["Blood Group", "Expected Demand", "Available Inventory", "Shortage", "Recommended Quantity", "Status"],
+          jit.recommendations.map(r =>
+            `<tr class="${r.status === "shortage" ? "row-bad" : ""}"><td>${r.blood_group}</td><td>${fmt(r.expected_demand)}</td><td>${r.available_inventory}</td><td>${fmt(r.projected_shortage)}</td><td>${fmt(r.recommended_quantity)}</td><td>${r.status === "shortage" ? badge("bad", "Shortage / Recommendation Required") : badge("ok", "Sufficient Stock")}</td></tr>`
+          ).join("")
+        );
+
+        document.getElementById("alert-summary-cards").innerHTML = [
+          ["Low-stock groups", String(lowStockCount), "Phase 2"],
+          ["Near-expiry batches", String(near.length), "Phase 2"],
+          ["Expired batches", String(expired.length), "Phase 2"],
+          ["Forecast shortage groups", String(shortageCount), "Phase 3"]
+        ].map(([label, value, hint]) =>
+          `<article class="card"><div class="label">${label}</div><div class="value">${value}</div><div class="hint">${hint}</div></article>`
+        ).join("");
+        table(document.getElementById("alert-low-table"), stockHeads,
+          inv.by_blood_group.filter(g => g.low_stock).map(g =>
+            `<tr class="row-warn"><td>${g.blood_group}</td><td>${g.available_units}</td><td>${g.threshold}</td><td>${badge("warn", "Low Stock")}</td></tr>`
+          ).join("")
+        );
+        table(document.getElementById("alert-shortage-table"),
+          ["Blood Group", "Expected Demand", "Available Inventory", "Shortage", "Recommended Quantity"],
+          shortages.map(r =>
+            `<tr class="row-bad"><td>${r.blood_group}</td><td>${fmt(r.expected_demand)}</td><td>${r.available_inventory}</td><td>${fmt(r.projected_shortage)}</td><td>${fmt(r.recommended_quantity)}</td></tr>`
+          ).join("")
+        );
+
+        showView((location.hash || "#dashboard").replace("#", "") || "dashboard");
+      })
+      .catch(err => {
+        const status = document.getElementById("system-status");
+        status.classList.add("offline");
+        status.innerHTML = `<span class="pulse"></span> System Offline`;
+        const side = document.getElementById("system-status-side");
+        side.classList.add("offline");
+        side.innerHTML = `<span class="pulse"></span> System Offline`;
+        document.getElementById("status-line").innerHTML =
+          `<div class="error">Could not load live dashboard data. Start the API from the project folder, then open http://127.0.0.1:8000/ — ${err}</div>`;
+      });
+  </script>
 </body>
 </html>
