@@ -1,0 +1,114 @@
+[
+  {
+    "blood_group": "A+",
+    "window": 7,
+    "forecast_level": 15.0,
+    "last_window_values": [
+      13.0,
+      20.0,
+      24.0,
+      12.0,
+      10.0,
+      13.0,
+      13.0
+    ]
+  },
+  {
+    "blood_group": "AB-",
+    "window": 7,
+    "forecast_level": 2.7142857142857144,
+    "last_window_values": [
+      3.0,
+      4.0,
+      2.0,
+      2.0,
+      2.0,
+      4.0,
+      2.0
+    ]
+  },
+  {
+    "blood_group": "A-",
+    "window": 7,
+    "forecast_level": 5.571428571428571,
+    "last_window_values": [
+      7.0,
+      6.0,
+      5.0,
+      4.0,
+      3.0,
+      8.0,
+      6.0
+    ]
+  },
+  {
+    "blood_group": "B+",
+    "window": 7,
+    "forecast_level": 11.0,
+    "last_window_values": [
+      12.0,
+      13.0,
+      11.0,
+      8.0,
+      8.0,
+      13.0,
+      12.0
+    ]
+  },
+  {
+    "blood_group": "B-",
+    "window": 7,
+    "forecast_level": 3.2857142857142856,
+    "last_window_values": [
+      3.0,
+      4.0,
+      4.0,
+      3.0,
+      2.0,
+      3.0,
+      4.0
+    ]
+  },
+  {
+    "blood_group": "O+",
+    "window": 7,
+    "forecast_level": 22.714285714285715,
+    "last_window_values": [
+      26.0,
+      29.0,
+      25.0,
+      15.0,
+      17.0,
+      22.0,
+      25.0
+    ]
+  },
+  {
+    "blood_group": "O-",
+    "window": 7,
+    "forecast_level": 7.285714285714286,
+    "last_window_values": [
+      8.0,
+      8.0,
+      9.0,
+      5.0,
+      5.0,
+      8.0,
+      8.0
+    ]
+  },
+  {
+    "blood_group": "AB+",
+    "window": 7,
+    "forecast_level": 5.0,
+    "last_window_values": [
+      6.0,
+      4.0,
+      7.0,
+      3.0,
+      3.0,
+      6.0,
+      6.0
+    ]
+  }
+]

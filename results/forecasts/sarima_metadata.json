@@ -1,0 +1,130 @@
+[
+  {
+    "blood_group": "A+",
+    "order": [
+      1,
+      1,
+      1
+    ],
+    "seasonal_order": [
+      1,
+      1,
+      1,
+      7
+    ],
+    "used_fallback": false,
+    "fallback_level": 15.0
+  },
+  {
+    "blood_group": "A-",
+    "order": [
+      1,
+      1,
+      1
+    ],
+    "seasonal_order": [
+      1,
+      1,
+      1,
+      7
+    ],
+    "used_fallback": false,
+    "fallback_level": 5.571428571428571
+  },
+  {
+    "blood_group": "AB+",
+    "order": [
+      1,
+      1,
+      1
+    ],
+    "seasonal_order": [
+      1,
+      1,
+      1,
+      7
+    ],
+    "used_fallback": false,
+    "fallback_level": 5.0
+  },
+  {
+    "blood_group": "AB-",
+    "order": [
+      1,
+      1,
+      1
+    ],
+    "seasonal_order": [
+      1,
+      1,
+      1,
+      7
+    ],
+    "used_fallback": false,
+    "fallback_level": 2.7142857142857144
+  },
+  {
+    "blood_group": "B+",
+    "order": [
+      1,
+      1,
+      1
+    ],
+    "seasonal_order": [
+      1,
+      1,
+      1,
+      7
+    ],
+    "used_fallback": false,
+    "fallback_level": 11.0
+  },
+  {
+    "blood_group": "B-",
+    "order": [
+      1,
+      1,
+      1
+    ],
+    "seasonal_order": [
+      1,
+      1,
+      1,
+      7
+    ],
+    "used_fallback": false,
+    "fallback_level": 3.2857142857142856
+  },
+  {
+    "blood_group": "O+",
+    "order": [
+      1,
+      1,
+      1
+    ],
+    "seasonal_order": [
+      1,
+      1,
+      1,
+      7
+    ],
+    "used_fallback": false,
+    "fallback_level": 22.714285714285715
+  },
+  {
+    "blood_group": "O-",
+    "order": [
+      1,
+      1,
+      1
+    ],
+    "seasonal_order": [
+      1,
+      1,
+      1,
+      7
+    ],
+    "used_fallback": false,
+    "fallback_level": 7.285714285714286
+  }
+]

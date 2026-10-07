@@ -1,0 +1,62 @@
+{
+  "selected_model": "XGBoost",
+  "selection_rule": "lowest_MAE",
+  "selection_reason": "XGBoost was selected because it achieved the lowest MAE (1.4185) on the synthetic hold-out set among SMA, XGBoost, and SARIMA.",
+  "test_days": 28,
+  "test_start": "2024-12-04",
+  "test_end": "2024-12-31",
+  "sma_window": 7,
+  "source_csv": "C:\\Users\\garav\\OneDrive\\Desktop\\plateletnet\\data\\raw\\platelet_demand.csv",
+  "data_note": "synthetic/demo demand only \u2014 not a clinical system",
+  "metrics": [
+    {
+      "model": "XGBoost",
+      "MAE": 1.4184941074677877,
+      "RMSE": 2.356195574669679,
+      "MAPE": 18.455700924496025,
+      "rank": 1
+    },
+    {
+      "model": "SARIMA",
+      "MAE": 1.4645274634779732,
+      "RMSE": 2.402411900899187,
+      "MAPE": 18.651049327210206,
+      "rank": 2
+    },
+    {
+      "model": "SMA",
+      "MAE": 2.3392857142857144,
+      "RMSE": 3.369846783896677,
+      "MAPE": 28.45789019142219,
+      "rank": 3
+    }
+  ],
+  "xgboost_model_path": "C:\\Users\\garav\\OneDrive\\Desktop\\plateletnet\\results\\forecasts\\xgboost_model.json",
+  "feature_columns": [
+    "blood_group_code",
+    "dayofweek",
+    "month",
+    "weekofyear",
+    "dayofyear",
+    "is_weekend",
+    "quarter",
+    "seasonal_factor",
+    "lag_1",
+    "lag_7",
+    "lag_14",
+    "roll_mean_7",
+    "roll_mean_14",
+    "roll_std_7",
+    "roll_std_14"
+  ],
+  "blood_group_codes": {
+    "A+": 2,
+    "A-": 3,
+    "AB+": 6,
+    "AB-": 7,
+    "B+": 4,
+    "B-": 5,
+    "O+": 0,
+    "O-": 1
+  }
+}

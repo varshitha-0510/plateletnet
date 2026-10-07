@@ -36,9 +36,12 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Generated experiment outputs (keep folder structure via .gitkeep)
+# Generated experiment outputs
 results/forecasts/*
 !results/forecasts/.gitkeep
+!results/forecasts/*.csv
+!results/forecasts/*.json
+
 results/simulations/*
 !results/simulations/.gitkeep
 results/figures/*
